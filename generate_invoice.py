@@ -1,24 +1,25 @@
-import PyPDF2
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 def create_invoice(customer_name, items, total_amount, invoice_number):
-    # Create a PDF object
-    pdf = PyPDF2.PdfFileWriter()
+    # Create a PDF canvas
+    c = canvas.Canvas(f"Invoice_{invoice_number}.pdf", pagesize=letter)
 
-    # Add a new page
-    page = pdf.add_page()
-
-    # Set up a PDF content stream
-    content = f"Invoice Number: {invoice_number}\n\nCustomer Name: {customer_name}\n\nItems:\n"
+    # Set up the content
+    y = 750
+    c.drawString(100, y, f"Invoice Number: {invoice_number}")
+    y -= 20
+    c.drawString(100, y, f"Customer Name: {customer_name}")
+    y -= 40
+    c.drawString(100, y, "Items:")
     for item in items:
-        content += f"- {item['name']}: ${item['price']}\n"
-    content += f"\nTotal Amount: ${total_amount}"
+        y -= 20
+        c.drawString(120, y, f"- {item['name']}: ${item['price']}")
+    y -= 40
+    c.drawString(100, y, f"Total Amount: ${total_amount}")
 
-    # Add content to the page
-    page.mergePage(content)
-
-    # Save the PDF to a file
-    with open(f"Invoice_{invoice_number}.pdf", "wb") as file:
-        pdf.write(file)
+    # Save the PDF
+    c.save()
 
 # Example usage
 customer_name = "John Doe"
